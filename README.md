@@ -37,7 +37,9 @@ I combined `OUTAGE.START.DATE` with `OUTAGE.START.TIME` into a single `OUTAGE.ST
 
 ### Univariate Analysis
 
-The distribution of outage duration (in hours) shows that most outages are relatively short, with a long right tail of longer-duration events.
+#### Outage duration
+
+The distribution of outage duration (in hours) is strongly right-skewed: most outages are resolved within a relatively short time window, but a smaller number of events last much longer, creating a long tail.
 
 <iframe
   src="assets/duration-histogram.html"
@@ -46,12 +48,36 @@ The distribution of outage duration (in hours) shows that most outages are relat
   frameborder="0"
 ></iframe>
 
+#### Cause category
+
+Next, I examine how frequently each `CAUSE.CATEGORY` appears. This provides context for which types of events are most common in the historical record.
+
+<iframe
+  src="assets/cause-histogram.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
 ### Bivariate Analysis
 
-Outage duration varies noticeably by climate region. The Southeast and Northeast tend to have more prolonged outages on average.
+#### Duration by climate region
+
+Outage duration varies noticeably by climate region. The box plot highlights differences in typical outage duration across regions as well as extreme long-duration outliers.
 
 <iframe
   src="assets/duration-by-region.html"
+  width="800"
+  height="600"
+  frameborder="0"
+></iframe>
+
+#### Customers affected vs. demand loss
+
+I also examine the relationship between `CUSTOMERS.AFFECTED` and `DEMAND.LOSS.MW` as two measures of outage severity. While large outages often affect more customers and can involve larger demand loss, the relationship is not perfectly linear because demand loss is sometimes missing and can be estimated differently across events.
+
+<iframe
+  src="assets/demand-vs-customers.html"
   width="800"
   height="600"
   frameborder="0"
@@ -64,9 +90,12 @@ Average outage duration and customers affected by cause category:
 | CAUSE.CATEGORY | OUTAGE.DURATION_HR | CUSTOMERS.AFFECTED |
 |----------------|--------------------|--------------------|
 | fuel supply emergency | 224.73 | 0.14 |
-| severe weather | 65.49 | 0.20 |
-| equipment failure | 30.78 | 0.13 |
-| ... | ... | ... |
+| severe weather | 64.73 | 188574.80 |
+| equipment failure | 30.28 | 101935.57 |
+| public appeal | 24.47 | 7618.76 |
+| system operability disruption | 12.15 | 211066.02 |
+| intentional attack | 7.17 | 1790.53 |
+| islanding | 3.34 | 6169.09 |
 
 ---
 
@@ -99,7 +128,7 @@ I tested whether missingness in `DEMAND.LOSS.MW` depends on `OUTAGE.DURATION_HR`
 
 **Significance level:** α = 0.05
 
-**Result:** [Report your p-value and conclusion here after running the test]
+**Result:** The observed difference in medians (winter − summer) is about **5.27 hours**, with a **p-value of 0.089**. Since 0.089 > 0.05, I fail to reject the null hypothesis and do **not** have strong evidence that winter outages are longer than summer outages.
 
 ---
 
@@ -123,7 +152,7 @@ I tested whether missingness in `DEMAND.LOSS.MW` depends on `OUTAGE.DURATION_HR`
 
 **Model:** Linear regression in an sklearn Pipeline.
 
-**Performance:** [Report train and test RMSE here]
+**Performance:** Training RMSE ≈ **80.46** hours and test RMSE ≈ **118.22** hours. The relatively higher test RMSE suggests the linear model captures some structure but still leaves substantial unexplained variation in outage duration.
 
 ---
 
@@ -133,9 +162,9 @@ I tested whether missingness in `DEMAND.LOSS.MW` depends on `OUTAGE.DURATION_HR`
 
 **Model:** RandomForestRegressor with GridSearchCV for `n_estimators`, `max_depth`, and `min_samples_leaf`.
 
-**Best hyperparameters:** [Report here]
+**Best hyperparameters:** `n_estimators = 300`, `max_depth = None`, `min_samples_leaf = 5`.
 
-**Performance:** [Report train and test RMSE; describe improvement over baseline]
+**Performance:** Training RMSE ≈ **64.84** hours and test RMSE ≈ **107.74** hours. Compared to the baseline model, the final model reduces test RMSE by about **10.5 hours**, indicating better predictive performance while still generalizing reasonably well.
 
 ---
 
@@ -149,7 +178,7 @@ I tested whether missingness in `DEMAND.LOSS.MW` depends on `OUTAGE.DURATION_HR`
 
 **Alternative hypothesis:** The model is unfair. MAE differs significantly between the two regions.
 
-**Result:** [Report p-value and conclusion here]
+**Result:** The observed MAE difference (Group A − Group B) is about **2.46 hours**, with a **p-value of 0.492** from a one-sided permutation test. Since 0.492 >> 0.05, I fail to reject the null hypothesis and do not find strong evidence that the model is less accurate for one of the two climate regions.
 
 ---
 
