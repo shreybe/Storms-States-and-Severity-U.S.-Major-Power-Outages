@@ -107,7 +107,12 @@ I believe **`DEMAND.LOSS.MW`** is likely **MNAR**. Large, well-documented outage
 
 ### Missingness Dependency
 
-I tested whether missingness in `DEMAND.LOSS.MW` depends on **cause category** and on **month of year**.\n\n- Using a **total variation distance (TVD)** permutation test, I found strong evidence that the distribution of `CAUSE.CATEGORY` is different when demand loss is missing vs. not missing (large observed TVD with p-value ≈ 0).\n- Using a permutation test on the **mean of `MONTH`**, I did *not* find a statistically significant difference between the missing and non-missing groups (p-value ≈ 0.25).\n\nThis suggests that demand-loss missingness is associated with the type of event, but not strongly with the time of year. The plot below shows the distribution of outage duration when demand loss is missing vs. not missing.
+I tested whether missingness in `DEMAND.LOSS.MW` depends on **cause category** and on **month of year**.
+
+- Using a **total variation distance (TVD)** permutation test, I found strong evidence that the distribution of `CAUSE.CATEGORY` is different when demand loss is missing vs. not missing (large observed TVD with p-value ≈ 0).
+- Using a permutation test on the **mean of `MONTH`**, I did *not* find a statistically significant difference between the missing and non-missing groups (p-value ≈ 0.25).
+
+This suggests that demand-loss missingness is associated with the type of event, but not strongly with the time of year. The plot below shows the distribution of outage duration when demand loss is missing vs. not missing.
 
 <iframe
   src="assets/missingness-duration.html"
